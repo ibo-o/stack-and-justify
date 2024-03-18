@@ -1,24 +1,9 @@
 export const Words = (function() {
 	const languages = [
 		{
-			name: 'catalan',
-			label: 'Catalan',
-			code: 'ca',
-			selected: false
-		}, {
-			name: 'czech',
-			label: 'Czech',
-			code: 'cs',
-			selected: false
-		}, {
-			name: 'danish',
-			label: 'Danish',
-			code: 'da',
-			selected: false
-		}, {
-			name: 'dutch',
-			label: 'Dutch',
-			code: 'nl',
+			name: 'bengali',
+			label: 'Bengali',
+			code: 'bn',
 			selected: false
 		}, {
 			name: 'english',
@@ -26,59 +11,39 @@ export const Words = (function() {
 			code: 'en',
 			selected: true
 		}, {
-			name: 'finnish',
-			label: 'Finnish',
-			code: 'fi',
-			selected: false
-		}, {
-			name: 'french',
-			label: 'French',
-			code: 'fr',
-			selected: false
-		}, {
 			name: 'german',
 			label: 'German',
 			code: 'de',
 			selected: false
 		}, {
-			name: 'hungarian',
-			label: 'Hungarian',
-			code: 'hu',
+			name: 'hebrew',
+			label: 'Hebrew',
+			code: 'he',
 			selected: false
 		}, {
-			name: 'icelandic',
-			label: 'Icelandic',
-			code: 'is',
+			name: 'hindi',
+			label: 'Hindi',
+			code: 'hi',
 			selected: false
 		}, {
-			name: 'italian',
-			label: 'Italian',
-			code: 'it',
+			name: 'korean',
+			label: 'Korean',
+			code: 'ko',
 			selected: false
 		}, {
-			name: 'latin',
-			label: 'Latin',
-			code: 'la',
+			name: 'turkish',
+			label: 'Turkish',
+			code: 'tr',
 			selected: false
 		}, {
-			name: 'norwegian',
-			label: 'Norwegian',
-			code: 'no',
+			name: 'vietnamese',
+			label: 'Vietnamese',
+			code: 'vi',
 			selected: false
 		}, {
-			name: 'polish',
-			label: 'Polish',
-			code: 'pl',
-			selected: false
-		}, {
-			name: 'slovak',
-			label: 'Slovak',
-			code: 'sk',
-			selected: false
-		}, {
-			name: 'spanish',
-			label: 'Spanish',
-			code: 'es',
+			name: 'videogames',
+			label: 'Video Games',
+			code: 'vg',
 			selected: false
 		}
 	];
