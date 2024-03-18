@@ -56,18 +56,18 @@ body {
 	min-height: 100vh;
 	transition: background 0.1s, color 0.2s;
 
+	--bg-color: #000;
+	--fg-color: #FFF;
+	--green: #00e682;
+	--green-light: #00b47c;
+}
+
+body.dark {
 	--bg-color: #FFF;
 	--fg-color: #000;
 	--grey: #A0A0A0;
 	--green: #00b47c;
 	--green-light: #00e682;
-}
-
-body.dark {
-	--bg-color: #000;
-	--fg-color: #FFF;
-	--green: #00e682;
-	--green-light: #00b47c;
 }
 
 input[disabled] {
