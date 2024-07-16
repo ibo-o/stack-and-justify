@@ -16,6 +16,11 @@ export const Words = (function() {
 			code: 'de',
 			selected: false
 		}, {
+			name: 'arabic',
+			label: 'Arabic',
+			code: 'ar',
+			selected: false
+		}, {
 			name: 'hebrew',
 			label: 'Hebrew',
 			code: 'he',
