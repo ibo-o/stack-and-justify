@@ -1,6 +1,11 @@
 export const Words = (function() {
 	const languages = [
 		{
+			name: 'arabic',
+			label: 'Arabic',
+			code: 'ar',
+			selected: false
+		}, {
 			name: 'bengali',
 			label: 'Bengali',
 			code: 'bn',
@@ -16,9 +21,9 @@ export const Words = (function() {
 			code: 'de',
 			selected: false
 		}, {
-			name: 'arabic',
-			label: 'Arabic',
-			code: 'ar',
+			name: 'farsi',
+			label: 'Farsi',
+			code: 'fa',
 			selected: false
 		}, {
 			name: 'hebrew',
