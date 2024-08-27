@@ -56,18 +56,20 @@ body {
 	min-height: 100vh;
 	transition: background 0.1s, color 0.2s;
 
-	--bg-color: #000;
-	--fg-color: #FFF;
-	--green: #00e682;
-	--green-light: #00b47c;
-}
-
-body.dark {
 	--bg-color: #FFF;
 	--fg-color: #000;
+	--grey-light: #F9F9F9;
 	--grey: #A0A0A0;
 	--green: #00b47c;
 	--green-light: #00e682;
+}
+
+body.dark {
+	--bg-color: #000;
+	--fg-color: #FFF;
+	--grey-light: #171717;
+	--green: #00e682;
+	--green-light: #00b47c;
 }
 
 input[disabled] {
@@ -100,8 +102,13 @@ input[disabled] {
 
 /* Links */
 
-*[disabled] {
+.disabled {
 	opacity: 0.3;
+}
+
+.disabled:hover {
+	cursor: default;
+	color: inherit;
 }
 
 button {
@@ -137,7 +144,7 @@ button:active {
 	position: relative;
 	display: grid;
 	grid-column-gap: 2rem;
-	grid-template-columns: 2fr 3fr 2fr 1fr;
+	grid-template-columns: 2fr 3fr 1fr 1fr 1fr;
 	padding-bottom: 4rem;
 }
 
@@ -166,11 +173,13 @@ body.dark .logo svg .fill {
 .drop-message {
 	user-select: none;
 	-webkit-user-select: none;
+}
+
+.drop-btn {
 	white-space: nowrap;
 }
 
 .header-btns {
-	grid-column: 4;
 	text-align: right;
 	user-select: none;
 	-webkit-user-select: none;
@@ -300,10 +309,18 @@ body.dark .logo svg .fill {
 }
 
 .specimen-line {
+	position: relative;
 	display: grid;
 	grid-column: span 3;
 	grid-template-columns: subgrid;
 	border-bottom: 1px dotted;
+	cursor: grab;
+	transition: background-color 0.2s;
+}
+
+.specimen-line:hover {
+	background-color: var(--grey-light);
+
 }
 
 @supports not (grid-template-columns: subgrid) {
@@ -347,7 +364,18 @@ body.dark .logo svg .fill {
 
 .specimen-line .text {
 	align-self: center;
+	cursor: text;
+	transition: opacity 0.15s;
 }
+
+.specimen-line .text.visible {
+	opacity: 1;
+}
+
+.specimen-line .text.hidden {
+	opacity: 0;
+}
+
 
 .specimen-line .loading {
 	position: absolute;
@@ -359,7 +387,7 @@ body.dark .logo svg .fill {
 	justify-content: center;
 	align-items: center;
 	color: #A0A0A0;
-	background: var(--bg-color);
+/*	background: var(--bg-color);*/
 	transition: opacity 0.15s;
 	pointer-events: none;
 	user-select: none;
@@ -595,6 +623,12 @@ body.dark .logo svg .fill {
 
 /* Inputs */
 
+input:focus {
+	outline: 0;
+	box-shadow: 0 0 0 2px var(--grey);
+	border-radius: 1px;
+}
+
 .line-count {
 	white-space: nowrap;
 }
@@ -618,8 +652,21 @@ body.dark .logo svg .fill {
 	margin-right: 3rem;
 }
 
+.size-input-wrapper {
+	display: flex;
+	align-items: start;
+}
+
 .size-input-global {
 	padding-top: 0;
+}
+
+.size-input.disabled button {
+	cursor: default;
+}
+
+.size-input.disabled button:hover {
+	color: inherit;
 }
 
 .size-input input {
@@ -722,9 +769,17 @@ body.dark .logo svg .fill {
 	cursor: pointer;
 }
 
-.select-wrapper select {
+.select-wrapper:not(.disabled):hover {
+	color: var(--green);
+}
+
+select {
 	appearance: none;
 	cursor: pointer;
+}
+
+select[disabled] {
+	cursor: inherit;
 }
 
 .select-wrapper::after {
@@ -755,55 +810,111 @@ body.dark .logo svg .fill {
 	top: 0;
 }
 
-.options {
-	margin-right: 2rem;
+.menu-container {
 	white-space: nowrap;
 	position: relative;
 	user-select: none;
 	-webkit-user-select: none;
 }
 
-.options-menu {
+.menu {
 	position: absolute;
-	top: 1.75rem;
-	left: -1.25rem;
+	top: 1.5rem;
+	left: -1rem;
 	background: var(--bg-color);
 	border: 1px dotted;
 	border-radius: 0.35rem;
 	box-shadow: 1px 2px 2px rgba(0,0,0,0.25);
 	z-index: 3;
+	max-height: calc(100vh - 5.5rem);
+	overflow: auto;
 }
 
-.options-menu fieldset {
-	padding-top: 0.75rem;
-	padding-bottom: 0.75rem; 
+.submenu {
+	padding-top: 0rem; 
+	padding-bottom: 0rem; 
 }
 
-.options-menu fieldset > * {
+.submenu > * {
 	box-sizing: border-box;
 	width: 100%;
-	padding-left: 1.25rem;
-	padding-right: 1.25rem;
+	padding-left: 1rem;
+	padding-right: 1rem;
 }
 
-.options-menu fieldset legend {
-	float: left;
-	padding-top: 0.75rem;
-	padding-bottom: 0.75rem;
-	border-top: 1px dotted;
+.submenu-header {
+	padding-top: 0.55rem;
+	padding-bottom: 0.5rem;
+	position: relative;
+	display: flex;
+	justify-content: space-between;
+	position: sticky;
+	top: 0;
+	background: var(--bg-color);
+	z-index: 1;
+}
+
+.submenu-header::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	width: 100%;
+	top: -1px;
 	border-bottom: 1px dotted;
-	margin-bottom: 1rem;
+	border-color: var(--fg-color);
 }
 
-.options-menu fieldset:first-of-type legend {
-	padding-top: 0;
-	border-top: 0;
+.submenu-header::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	width: 100%;
+	bottom: -1px;
+	border-bottom: 1px dotted;
+	border-color: var(--fg-color);
 }
 
-.options-update {
+.submenu-toggle {
+	cursor: pointer;
+}
+
+.submenu-toggle:hover {
+	color: var(--green);
+} 
+
+.submenu-content {
+	overflow: hidden;
+	transition: max-height 0.4s;
+}
+
+.submenu-content::before {
+	content: "";
+	display: block;
+	padding-top: 0.75rem;
+}
+
+.submenu-content::after {
+	content: "";
+	display: block;
+	padding-bottom: 0.75rem;
+}
+
+.menu-update {
 	text-align: right;
 	border-top: 1px dotted;
-	padding: 0.75rem 1.25rem;
+	padding: 0.55rem 1rem 0.5rem;
+	position: sticky;
+	bottom: 0;
+	background: var(--bg-color);
+	z-index: 1;
+}
+
+.menu-update.disabled button {
+	cursor: default;
+}
+
+.menu-update.disabled button:hover {
+	color: inherit;
 }
 
 .checkbox {
@@ -813,6 +924,7 @@ body.dark .logo svg .fill {
 
 input[type="checkbox"] {
 	appearance: none;
+	display: none;
 }
 
 .checkbox label {
@@ -834,7 +946,18 @@ input[type="checkbox"]:checked + label::before {
 }
 
 .checkbox label {
+	width: 100%;
+	padding-left: 0.25rem;
 	white-space: nowrap;
+}
+
+.feature-tag {
+	font-family: monospace;
+	font-size: 11px;
+	position: relative;
+	top: -1px;
+	text-transform: uppercase;
+	margin-right: 1em;
 }
 
 /* About */
@@ -849,7 +972,7 @@ input[type="checkbox"]:checked + label::before {
 	opacity: 0;
 	padding-top: 3.285rem;
 	display: grid;
-	grid-template-columns: repeat(4, 1fr);
+	grid-template-columns: 2fr 3fr 1fr 1fr 1fr;
 	grid-column-gap: 2rem;
 	transition: visibility 175ms, opacity 175ms, background 0.1s;
 	z-index: 2;
@@ -867,11 +990,36 @@ input[type="checkbox"]:checked + label::before {
 
 .about-text {
 	grid-column: span 3;
+	display: grid;
+	grid-column-gap: 2rem;
+	grid-template-columns: 3fr 1fr 1fr;
+	grid-auto-rows: min-content
 }
 
 .about-text p {
 	max-width: 51rem;
 	margin-bottom: 2rem;
+	grid-column: span 3;
+}
+
+.about-text p.col-1 {
+	grid-column: span 1;
+}
+
+.donation-btn {
+	border: 1px dotted;
+	border-radius: 7px;
+	padding: 0 8px 2px 11px;
+	display: inline-block;
+	margin-top: 8px;
+}
+
+.donation-btn::before {
+	content: "$";
+	font-size: 14px;
+	position: relative;
+	top: -4px;
+  	margin-right: 6px;
 }
 
 @media screen and (max-width: 430px) {
