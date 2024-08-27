@@ -1,57 +1,77 @@
-import { WordGenerator } from "./WordGenerator.js";
+import { Words } from "./Words.js";
+import { WordGenerator } from "./wordgenerator/WordGenerator.js";
 import { Layout } from "./Layout.js";
-import { generateUID } from "./Helpers.js";
+import { generateUID, Computed } from "./Helpers.js";
 
-export const Font = function(name, data) {
-	// Digits at the beginning of the file name prevent it from loading 
-	const fontFaceName = name.replace(/^\d+/, '');
+export const Font = function(name, data, info) {
+	const id = generateUID();
+	const fontFaceName = info.fileName;
+	const features = [];
+	const fontFeatureSettings = Computed(() => generateFontFeatureSettings(features));
+	const displayFeatureSettings = Computed(() => fontFeatureSettings.val);
 	const wordGenerator = WordGenerator(fontFaceName, data);
 	let isLoading = true;
-	const id = generateUID();
 
-	async function init() {
+	async function load() {
 		const fontFace = new FontFace(fontFaceName, data);
 		document.fonts.add(fontFace);
 
 		await fontFace.load();
 
-		try {
-			await wordGenerator.sort();	
-		} catch (error) {
-			console.log(error);
-		}
-		
-		isLoading = false;
-
-		// Dispatch event
-		const event = new CustomEvent("font-loaded", {detail: {fontId: id}});
-		window.dispatchEvent(event);
+		update();
 	}
 
 	async function update() {
 		isLoading = true;
-		await wordGenerator.sort();
-		isLoading = false;
+		const words = await Words.get();
+		fontFeatureSettings.update();
+
+		try {
+			await wordGenerator.sort(words, fontFeatureSettings.val);
+		} catch (error) {
+			console.log(error);
+		}
+
+		displayFeatureSettings.update();
+
 		// Dispatch event
-		const event = new CustomEvent("font-loaded", {detail: {fontId: id}});
+		const event = new CustomEvent("font-loaded", {detail: {font}});
 		window.dispatchEvent(event);
-		m.redraw();
+
+		isLoading = false;
 	}
 
-	init();
-
-	return {
+	const font = {
 		name,
-		get isLoading() {
-			return isLoading;
-		},
 		fontFaceName,
 		data,
+		info,
+		features,
+		fontFeatureSettings: displayFeatureSettings,
 		id,
+		load,
 		update,
+		wordGenerator,
 		get isLoading() {
 			return isLoading;
 		},
-		wordGenerator
 	}
+
+	return font;
+}
+
+function generateFontFeatureSettings(features) {
+	let str = "";
+	let featureStrings = [];
+
+	for (let feature of features) {
+		if (feature.selected) {
+			featureStrings.push(`"${feature.tag}" on`);
+		} else {
+			featureStrings.push(`"${feature.tag}" off`);
+		}
+	}
+
+	str = featureStrings.join(',');
+	return str;
 }

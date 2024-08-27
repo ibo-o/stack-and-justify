@@ -1,5 +1,4 @@
-import { handleFontFiles } from "../Helpers.js";
-import { Fonts } from "../Fonts.js";
+import { Fonts, handleFontFiles } from "../Fonts.js";
 import { Font } from "../Font.js";
 
 export function FontInput(initialVnode) {
@@ -14,9 +13,7 @@ export function FontInput(initialVnode) {
 			input.addEventListener('change', (e) => {
 				let files = input.files;
 				
-				handleFontFiles(files, function(fontName, fontData) {
-					Fonts.add(fontName, fontData);
-				});
+				handleFontFiles(files);
 			});
 		},
 		view: function(vnode) {
@@ -24,7 +21,7 @@ export function FontInput(initialVnode) {
 				m('input', {type: 'file', id:'file-upload', multiple:'multiple', accept: 'font/otf, font/ttf, font/woff, font/woff2, .otf, .ttf, .woff, .woff2', style:{display: 'none'}}),
 				m('span', 'Drop your fonts anywhere or '),
 				m('label', {for: 'file-upload'}, 
-					m('a', 'browse your computer ↗')
+					m('a.drop-btn', 'browse your computer ↗')
 				)
 			)
 		}

@@ -1,70 +1,53 @@
-import { Fonts } from "./Fonts.js";
 import { Line } from "./Line.js";
 import { Size } from "./Size.js";
+import { Filters } from "./Filters.js";
+import { Box } from "./Helpers.js";
+
+export const defaultWidth = Size('15cm');
+export const defaultSize = Size('60pt');
+export const defaultFilter = Filters[2];
 
 export const Layout = (function() {
-	const defaultWidth = '15cm';
-	const defaultSize = '60pt';
-
 	let lines = [];
-
-	let width = Size(defaultWidth);
-	width.onchange = () => {
-		update();
-	};
-
-	let size = Size(defaultSize);
-	size.onchange = () => {
-		update();
-	}
-	let sizeLocked = true;
-
-	let filter = 2;
-	let filterLocked = true;
-
-	let fontId = null;
-	let fontLocked = false;
+	let width = Size(defaultWidth.get());
+	let size = Size(defaultSize.get());
+	let sizeLocked = Box(true);
+	let filter = Box(defaultFilter);
+	let filterLocked = Box(true);
+	let font = Box(null);
+	let fontLocked = Box(false);
 
 	window.addEventListener('font-added', (e) => {
 		// If there's was no font before, select the one that's been added
-		if (fontId == null) {
-			fontId = e.detail.fontId;
+		if (font.val == null) {
+			font.val = e.detail.font;
 		}
-	});
-
-	window.addEventListener('font-removed', (e) => {
-		// The selected font has been removed, we need to select another one
-		if (fontId === e.detail.fontId && Fonts.first()) {
-			fontId = Fonts.first().id;
-		}
-
-		update();
+		addLine(e.detail.font, defaultSize, defaultFilter);
+		m.redraw();
 	});
 
 	function copyText() {
-		// Write plain text to the clipboard
-		navigator.clipboard.writeText(lines.map(line => line.text).join('\n'));
+		navigator.clipboard.writeText(lines.map(line => line.text.val).join('\n'));
 	}
 
 	async function update() {
 		lines.forEach(line => {line.update()});
 	}
 
-	async function updateAfterLockChange(parameter) {
-		lines.forEach(line => {line.updateAfterLockChange(parameter)});
-	}
-
-	function addLine(size, fontId) {
-		if (!size && !fontId && lines.length) {
-			const lastLine = lines[lines.length-1];
-			size = lastLine.size;
-			fontId = lastLine.fontId;
+	function addLine(_font, _size, _filter) {
+		if (!_font && !_size && !_filter) {
+			if (lines.length) {
+				const lastLine = lines[lines.length-1];
+				_font = lastLine.font.val;
+				_size = lastLine.size;
+				_filter = lastLine.filter.val;
+			} else {
+				_font = font.val;
+				_size = defaultSize;
+				_filter = defaultFilter;
+			}
 		}
-		if (!size || size === "default") {
-			size = defaultSize;
-		}
-
-		lines.push(Line(size, fontId));
+		lines.push(Line(_font, _size, _filter));
 	}
 
 	function moveLine(line, to) {
@@ -98,69 +81,31 @@ export const Layout = (function() {
 	}
 
 	function clear() {
-		lines = [];
+		lines.length = 0;
 	}
 
-	function textAlreadyUsed(text) {
-		return lines.find(line => line.text === text) ? true : false;
+	function textAlreadyUsed(str) {
+		return lines.find(line => line.text.val === str) ? true : false;
 	}
 
 	return {
+		lines,
+		width,
+		size,
+		filter,
+		font,
+		sizeLocked,
+		filterLocked,
+		fontLocked,
 		addLine,
 		removeLine,
 		getLine,
 		moveLine,
 		indexOf,
-		clear,
 		update,
-		clear,
 		copyText,
-		width,
-		size,
+		clear,
 		textAlreadyUsed,
-		get lines() {
-			return lines;
-		},
-		get sizeLocked() {
-			return sizeLocked;
-		},
-		set sizeLocked(value) {
-			sizeLocked = value;
-			updateAfterLockChange('size');
-		},
-		get filterLocked() {
-			return filterLocked;
-		},
-		set filterLocked(value) {
-			filterLocked = value;
-			localStorage['filterLocked'] = value;
-			updateAfterLockChange('filter');	
-		},
-		get filter() {
-			return filter;
-		},
-		set filter(value) {
-			filter = parseInt(value);
-			localStorage['filter'] = value;
-			update();
-		},
-		get fontLocked() {
-			return fontLocked;
-		},
-		set fontLocked(value) {
-			fontLocked = value;
-			localStorage['fontLocked'] = value;
-			updateAfterLockChange('font');	
-		},
-		get fontId() {
-			return fontId;
-		},
-		set fontId(value) {
-			fontId = value;
-			update();
-		},
-		get font() {
-			return Fonts.get(fontId);
-		}
+
 	}
 })();

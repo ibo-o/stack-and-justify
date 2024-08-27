@@ -13,8 +13,8 @@ const App = {
 		return [
 			m(Header),
 			m(DropZone),
-			m('main.main',			
-				Fonts.list.length ? m(Specimen) : m(SplashScreen),
+			m('main.main',
+				Fonts.length ? m(Specimen) : m(SplashScreen),
 				m(About)
 			),
 			m(Footer)

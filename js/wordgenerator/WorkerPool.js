@@ -1,15 +1,20 @@
 export const WorkerPool = (function() {
-	const workerCount = 1;
+	const workerCount = 4;
 	const workers = [];
 	const queue = [];
+	const hbModule = WebAssembly.compileStreaming(fetch('./js/harfbuzzjs/hb.wasm'));
 
-	for (let i = 0; i < workerCount; i++) {
-		const worker = new Worker('./js/SortDictionaryWorker.js');
-		workers[i] = {
-			worker,
-			available: true
-		};		
-	}
+	hbModule.then(hbModule => {
+		for (let i = 0; i < workerCount; i++) {
+			const worker = new Worker('js/wordgenerator/worker.js', {type: 'module'});
+			worker.postMessage({type: 'load-module', module: hbModule});
+
+			workers[i] = {
+				worker,
+				available: true
+			};
+		}
+	});
 
 	function handleNextMessage() {
 		if (queue.length) {
@@ -24,7 +29,7 @@ export const WorkerPool = (function() {
 
 	function postMessage(message, promise) {
 		const worker = workers.find(worker => worker.available);
-		
+
 		if (!promise) promise = Deferred();
 
 		if (!worker) {

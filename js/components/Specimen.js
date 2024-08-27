@@ -1,12 +1,11 @@
 import { AppState } from "../AppState.js";
 import { Layout } from "../Layout.js";
 import { Fonts } from "../Fonts.js";
-import { FontItems } from "./FontItems.js";
 import { Line } from "./Line.js";
 import { SizeInputGlobal } from "./SizeInputGlobal.js";
 import { FontSelectGlobal } from "./FontSelectGlobal.js";
 import { WidthInput } from "./WidthInput.js";
-import { CaseSelectGlobal } from "./CaseSelectGlobal.js";
+import { FilterSelectGlobal } from "./FilterSelectGlobal.js";
 import { CopyButtonGlobal } from "./CopyButtonGlobal.js";
 import { UpdateButtonGlobal } from "./UpdateButtonGlobal.js";
 import { NewLineButton } from "./NewLineButton.js";
@@ -115,13 +114,13 @@ export function Specimen(initialVnode) {
 				m('header.specimen-header',
 					m('div.line-left-col',
 						m(SizeInputGlobal),
-						Fonts.list.length ? m(FontSelectGlobal) : ''
+						Fonts.length ? m(FontSelectGlobal) : ''
 					),
 					m('div.line-middle-col',
 						m(WidthInput)
 					),
 					m('div.line-right-col',
-						m(CaseSelectGlobal),
+						m(FilterSelectGlobal),
 						m(CopyButtonGlobal, {onclick: Layout.copyText}),
 						m(UpdateButtonGlobal, {onclick: Layout.update}),
 						m(DeleteButtonGlobal, {onclick: Layout.clear})

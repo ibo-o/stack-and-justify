@@ -1,127 +1,54 @@
-import { Fonts } from './Fonts.js';
 import { Size } from './Size.js';
 import { Layout } from './Layout.js';
-import { Filters } from './Filters.js';
-import { generateUID } from './Helpers.js';
+import { generateUID, Box, Computed } from './Helpers.js';
 
-export function Line(size, fontId) {
-	if (typeof size === 'string') {
-		size = Size(size)
-	} else {
-		size = Size(size.get());
-	}
-
-	if (!fontId && Fonts.first()) fontId = Fonts.first().id;
-
-	let text = "";
-	let filter = 2;
+export function Line(_font, _size, _filter) {
 	const id = generateUID();
+	let font = Box(_font);
+	let size = Size(_size.get());
+	let filter = Box(_filter);
+	
+	const outputFont = Computed(() => Layout.fontLocked.val ? Layout.font.val : font.val);
+	outputFont.dependsOn(Layout.font, Layout.fontLocked, font);
 
-	size.onchange = update;
+	const outputSize = Computed(() => Layout.sizeLocked.val ? Layout.size.getIn('px') : size.getIn('px'));
+	outputSize.dependsOn(Layout.sizeLocked, Layout.size, size);
 
-	window.addEventListener('font-added', (e) => {
-		// If there's was no font before, select the one that's been added
-		if (fontId == null) {
-			fontId = e.detail.fontId;
-		}
+	const outputFilter = Computed(() => Layout.filterLocked.val ? Layout.filter.val : filter.val);
+	outputFilter.dependsOn(Layout.filter, Layout.filterLocked, filter);
+
+	const text = Computed(() => {
+		const textOptions = outputFont.val.wordGenerator.getWords(outputSize.val, Layout.width.getIn('px'), outputFilter.val, Layout.lines.length);
+		return textOptions.find(option => !Layout.textAlreadyUsed(option)) || "";
 	});
+	text.dependsOn(Layout.width, outputFont, outputSize, outputFilter);
 
 	window.addEventListener('font-loaded', (e) => {
-		if (e.detail.fontId === fontId) {
-			update();	
+		if (e.detail.font === outputFont.val) {
+			text.update();
+			m.redraw();
 		}
-	});
-
-	window.addEventListener('font-removed', (e) => {
-			// The selected font has been removed, we need to select another one
-		if (fontId === e.detail.fontId && Fonts.first()) {
-			fontId = Fonts.first().id;
-		}
-		update();
 	});
 
 	function remove() {
 		Layout.removeLine(id);
 	}
 
-	// Regenerate the text
-	async function update() {
-		const outputFontId = Layout.fontLocked ? Layout.fontId : fontId;
-		const outputFont = Fonts.get(outputFontId);
-		if (!outputFont) return;
-
-		const outputFilter = Layout.filterLocked ? Layout.filter : filter;
-		const outputSize = Layout.sizeLocked ? Layout.size.getIn('px') : size.getIn('px');
-		const outputWidth = Layout.width.getIn('px');
-
-		text = '';
-		const textOptions = await outputFont.wordGenerator.getWords(outputSize, outputWidth, Filters.list[outputFilter].value);
-		textOptions.forEach(option => {
-			if (!Layout.textAlreadyUsed(option)) {
-				text = option;
-			}
-		});
-		m.redraw();
-	}
-
-	// Regenerate the text only if the line’s parameter differs from global parameters
-	async function updateAfterLockChange(parameter) {
-		switch (parameter) {
-			case 'font':
-				if (Layout.fontId !== fontId) {
-					update();
-				}
-				break;
-			case 'size':
-				if (Layout.size.get() !== size.get()) {
-					update();
-				}
-				break;
-			case 'filter':
-				if (Layout.filter !== filter) {
-					update();
-				}
-				break;
-
-		}
-	}
-
 	function copyText() {
-		navigator.clipboard.writeText(text);
+		navigator.clipboard.writeText(text.val);
 	}
-
-	update();
 
 	return {
-		update,
-		updateAfterLockChange,
-		size,
-		get filter() {
-			return filter;
-		},
-		set filter(value) {
-			filter = parseInt(value);
-			update();
-		},
-		get text() {
-			return text;
-		},
-		set text(value) {
-			text = value;
-		},
-		get fontId() {
-			return fontId
-		},
-		set fontId(value) {
-			fontId = value;
-			update();
-		},
-		get font() {
-			return Fonts.get(fontId);
-		},
 		id,
+		font,
+		size,
+		filter,
+		outputFont,
+		outputSize,
+		outputFilter,
+		text,
+		update: text.update,
 		remove,
-		copyText,
-		locked: false
+		copyText
 	}
 }
