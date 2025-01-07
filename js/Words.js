@@ -41,6 +41,11 @@ export const Words = (function() {
 			code: 'ko',
 			selected: false
 		}, {
+			name: 'tamil',
+			label: 'Tamil',
+			code: 'ta',
+			selected: false
+		}, {
 			name: 'turkish',
 			label: 'Turkish',
 			code: 'tr',
